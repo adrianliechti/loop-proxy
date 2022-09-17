@@ -10,11 +10,21 @@ import (
 )
 
 func main() {
+	var addressFlag string
 	var portFlag int
+
 	var targetFlag string
 
+	var keyFile string
+	var certFile string
+
+	flag.StringVar(&addressFlag, "address", "", "local address")
 	flag.IntVar(&portFlag, "port", 8080, "lcoal proxy port")
+
 	flag.StringVar(&targetFlag, "target", "", "target address")
+
+	flag.StringVar(&keyFile, "key-file", "", "tls key file")
+	flag.StringVar(&certFile, "cert-file", "", "tls certificate file")
 
 	flag.Parse()
 
@@ -36,5 +46,12 @@ func main() {
 		proxy.ServeHTTP(w, r)
 	})
 
-	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", portFlag), nil))
+	addr := fmt.Sprintf("%s:%d", addressFlag, portFlag)
+
+	if certFile != "" {
+		log.Fatal(http.ListenAndServeTLS(addr, certFile, keyFile, nil))
+
+	} else {
+		log.Fatal(http.ListenAndServe(addr, nil))
+	}
 }
