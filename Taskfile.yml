@@ -1,7 +1,7 @@
 version: "3"
 
 vars:
-  DOCKER_IMAGE: adrianliechti/loop-proxy
+  DOCKER_IMAGE: ghcr.io/adrianliechti/loop-proxy
 
 tasks:
   push:

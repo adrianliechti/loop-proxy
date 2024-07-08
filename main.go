@@ -38,20 +38,19 @@ func main() {
 		log.Fatal(err)
 	}
 
-	proxy := httputil.NewSingleHostReverseProxy(target)
-
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		r.Host = target.Host
-
-		proxy.ServeHTTP(w, r)
-	})
+	proxy := &httputil.ReverseProxy{
+		Rewrite: func(r *httputil.ProxyRequest) {
+			r.SetURL(target)
+			r.Out.Host = r.In.Host
+		},
+	}
 
 	addr := fmt.Sprintf("%s:%d", addressFlag, portFlag)
 
 	if certFile != "" {
-		log.Fatal(http.ListenAndServeTLS(addr, certFile, keyFile, nil))
+		log.Fatal(http.ListenAndServeTLS(addr, certFile, keyFile, proxy))
 
 	} else {
-		log.Fatal(http.ListenAndServe(addr, nil))
+		log.Fatal(http.ListenAndServe(addr, proxy))
 	}
 }
