@@ -1,4 +1,4 @@
-FROM golang:1-alpine3.16 as build
+FROM golang:1-alpine AS build
 
 WORKDIR /src
 
@@ -7,7 +7,7 @@ COPY main.go .
 RUN go build -o proxy main.go
 
 
-FROM alpine:3.16
+FROM alpine:3
 
 WORKDIR /app
 COPY --from=build /src/proxy .
